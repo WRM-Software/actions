@@ -1,0 +1,40 @@
+# https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions?tabs=dotnet#deploy-the-function-app
+name: "Build Azure Function .NET core"
+description: "Build Azure Function .NET core or .NET core (using OS ubuntu)"
+
+inputs: 
+  project-path:
+    description: "Project Path"
+    required: true
+  artifact-name:
+    description: "artifact name for transfering between jobs"
+    required: true
+  dotnet-version:
+    description: "dotnet version to build"
+    required: true
+  retention-days:
+    description: "Keep artifact on remote (actions/upload-artifact@v2 - retention-days)"
+    default: 1
+
+runs:
+  using: "composite"
+  steps:
+    # Setup .NET Core SDK
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+
+    - name: Publish to folder
+      run: |
+        pushd './${{ inputs.project-path }}'
+        dotnet build --configuration Release --output ./output
+        popd
+      shell: bash
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: '${{ inputs.project-path }}/output'
+        retention-days: ${{ inputs.retention-days }}
