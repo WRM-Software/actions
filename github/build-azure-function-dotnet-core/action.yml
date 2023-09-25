@@ -27,7 +27,7 @@ runs:
 
     - name: Publish to folder
       run: |
-        pushd './${{ inputs.project-path }}'
+        pushd '${{ inputs.project-path }}'
         dotnet build --configuration Release --output ./output
         popd
       shell: bash
