@@ -26,8 +26,10 @@ runs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Publish to folder
+      env:
+        PROJECT_PATH: ${{ inputs.project-path }}
       run: |
-        pushd '${{ inputs.project-path }}'
+        pushd "$PROJECT_PATH"
         dotnet build --configuration Release --output ./output
         popd
       shell: bash
